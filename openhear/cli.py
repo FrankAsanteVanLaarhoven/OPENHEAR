@@ -145,6 +145,17 @@ def main(argv=None):
     run.add_argument("--device", choices=["auto", "cpu", "mps"], default="auto")
     run.add_argument("--report", default="benchmark-report.json")
     run.add_argument("--allow-incomplete", action="store_true")
+    calibrate = commands.add_parser("calibrate", help="Acoustic hardware loopback calibration")
+    calibrate.add_argument("--chirp-out", default=None, help="Generate calibration chirp WAV file")
+    calibrate.add_argument("--test-latency", action="store_true", help="Run synthetic loopback validation")
+    metrics = commands.add_parser("metrics", help="Evaluate S2ST scientific metrics (AL, LAAL, BLEU)")
+    metrics.add_argument("--delays", nargs="+", type=float, default=[200.0, 450.0, 700.0], help="Delays in ms")
+    metrics.add_argument("--src-len", type=int, default=10, help="Source length")
+    metrics.add_argument("--tgt-len", type=int, default=8, help="Target length")
+    metrics.add_argument("--ref", default="", help="Reference translation")
+    metrics.add_argument("--hyp", default="", help="Hypothesis translation")
+    guard = commands.add_parser("guardrails", help="Verify text against autoregressive hallucination patterns")
+    guard.add_argument("--text", required=True, help="Text to verify")
     args = parser.parse_args(argv)
     if args.action == "models" and args.model_action == "locate":
         from .model_locator import manifest_candidates, verified_candidates, select_model_root, ModelDiscoveryError
@@ -297,6 +308,37 @@ def main(argv=None):
         record["model_manifest"] = str(Path(args.models_dir).expanduser().resolve() / "models.lock.json")
         Path(args.evidence).write_text(json.dumps(record, ensure_ascii=False, indent=2), encoding="utf-8")
         print(json.dumps(record, ensure_ascii=False, indent=2))
+        return
+    if args.action == "calibrate":
+        import numpy as np
+        from .calibration import generate_calibration_chirp, detect_loopback_latency_ms, evaluate_latency_budget
+        from .audio import write_wav_bytes
+        chirp = generate_calibration_chirp()
+        if args.chirp_out:
+            Path(args.chirp_out).write_bytes(write_wav_bytes(chirp, 16000))
+            print(f"Calibration chirp written: {args.chirp_out}")
+        if args.test_latency:
+            # Synthetic 120ms offset loopback verification
+            offset = int(16000 * 0.12)
+            padded = np.pad(chirp, (offset, 1600), mode='constant')
+            delay_ms, conf = detect_loopback_latency_ms(chirp, padded)
+            budget = evaluate_latency_budget(delay_ms)
+            print(json.dumps({"measured_delay_ms": delay_ms, "confidence": conf, "budget": budget}, indent=2))
+        return
+    if args.action == "metrics":
+        from .metrics import compute_al, compute_laal, sentence_bleu
+        al = compute_al(args.delays, args.src_len, args.tgt_len)
+        laal = compute_laal(args.delays, args.src_len, args.tgt_len)
+        result = {"al_ms": round(al, 2), "laal_ms": round(laal, 2)}
+        if args.ref and args.hyp:
+            result["bleu"] = sentence_bleu(args.ref, args.hyp)
+        print(json.dumps(result, indent=2))
+        return
+    if args.action == "guardrails":
+        from .guardrails import is_phantom_hallucination, sanitize_hypothesis
+        is_hallucination, reason = is_phantom_hallucination(args.text)
+        sanitized = sanitize_hypothesis(args.text)
+        print(json.dumps({"text": args.text, "is_hallucination": is_hallucination, "reason": reason, "sanitized": sanitized}, indent=2))
         return
     if args.action == "serve":
         from .models import verify_manifest

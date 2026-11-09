@@ -103,6 +103,19 @@ def create_app(runtime_factory):
         return FileResponse(html_path.parent / name, media_type=allowed[name],
                             headers={"Cache-Control": "no-store", "X-Content-Type-Options": "nosniff"})
 
+    @app.get("/static/fonts/{name}")
+    def font_assets(name: str):
+        allowed = {"FixelDisplay-Bold.woff2": "font/woff2",
+                   "FixelDisplay-SemiBold.woff2": "font/woff2",
+                   "FixelText-Bold.woff2": "font/woff2",
+                   "FixelText-SemiBold.woff2": "font/woff2",
+                   "FixelText-Medium.woff2": "font/woff2",
+                   "FixelText-Regular.woff2": "font/woff2"}
+        if name not in allowed:
+            raise HTTPException(404, "Unknown font asset")
+        return FileResponse(html_path.parent / "fonts" / name, media_type=allowed[name],
+                            headers={"Cache-Control": "public, max-age=31536000, immutable", "X-Content-Type-Options": "nosniff"})
+
     @app.get("/", response_class=HTMLResponse)
     def home():
         return HTMLResponse(html_path.read_text(encoding="utf-8"), headers={"Cache-Control": "no-store", "Content-Security-Policy": "default-src 'self'; script-src 'self'; style-src 'self'; media-src blob: 'self'; connect-src 'self'; worker-src 'self'; object-src 'none'", "X-Content-Type-Options": "nosniff", "Referrer-Policy": "no-referrer", "Permissions-Policy": "microphone=(self)"})

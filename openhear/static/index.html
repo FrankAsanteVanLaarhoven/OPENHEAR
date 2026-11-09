@@ -11,57 +11,147 @@
 <body>
   <main class="shell">
     <header class="top">
-      <div class="brand"><span class="logo" aria-hidden="true">◈</span><span>OPENHEAR <em>BRIDGE</em></span></div>
+      <div class="brand">
+        <span class="logo" aria-hidden="true">◈</span>
+        <span>OPENHEAR <em>BRIDGE</em></span>
+      </div>
       <div class="product-state">LOCAL RESEARCH · M1.2 / M2α · OFFLINE FIRST</div>
     </header>
+
+    <!-- Hero with 3D VisionOS Glass Dish & Levitating Cloud -->
     <div class="hero">
-      <div>
-        <div class="eyebrow">SPEECH-TO-SPEECH RESEARCH CONSOLE</div>
-        <h1>Understand across<br />languages.</h1>
+      <div class="hero-content">
+        <div class="eyebrow">
+          <span class="dot"></span> SPEECH-TO-SPEECH RESEARCH CONSOLE
+        </div>
+        <h1>Understand across<br /><span class="gradient-word">languages.</span></h1>
         <p>Speak naturally. See the original text and local translation. Listen to an English or Mandarin synthetic voice through your selected audio output.</p>
+        <aside class="capability" aria-label="Research scope">
+          <span>Local models · English ⇄ Mandarin</span>
+          <small>Push-to-talk + VAD-segmented live turns. Calibrated offline S2ST.</small>
+        </aside>
       </div>
-      <aside class="capability" aria-label="Research scope">
-        <span class="dot"></span> Local models · English ⇄ Mandarin
-        <small>Push-to-talk + VAD-segmented live turns. Not simultaneous interpreting.</small>
-      </aside>
+
+      <!-- 3D Hero Medallion Stage -->
+      <div class="medallion-stage" id="heroMedallion" aria-hidden="true">
+        <div class="medallion-dish">
+          <div class="sound-rings">
+            <div class="sound-ring"></div>
+            <div class="sound-ring"></div>
+            <div class="sound-ring"></div>
+          </div>
+          <div class="cloud-floater">
+            <div class="cloud-body">
+              <div class="cloud-bubble cloud-b1"></div>
+              <div class="cloud-bubble cloud-b2"></div>
+              <div class="cloud-bubble cloud-b3"></div>
+              <div class="cloud-base"></div>
+              <!-- Floating Orbital Sound Particles -->
+              <div class="sound-orb orb-1"></div>
+              <div class="sound-orb orb-2"></div>
+              <div class="sound-orb orb-3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- Push-to-Talk Capture Section -->
     <section class="capture surface" aria-label="Microphone and input recording">
       <div class="section-title"><span>01</span> Capture speech <span id="captureState" class="tiny-badge">READY</span></div>
       <div class="controls">
         <label class="sr-only" for="direction">Translation direction</label>
-        <select id="direction"><option value="en:zh">English → Mandarin</option><option value="zh:en">Mandarin → English</option></select>
-        <button id="record" class="primary" disabled>● &nbsp;Start recording</button>
-        <button id="stop" class="secondary" disabled>■ &nbsp;Stop &amp; translate</button>
+        <select id="direction">
+          <option value="en:zh">English → Mandarin</option>
+          <option value="zh:en">Mandarin → English</option>
+        </select>
+        <button id="record" class="primary" disabled>
+          <span class="btn-wave" aria-hidden="true">
+            <span class="v-bar"></span>
+            <span class="v-bar"></span>
+            <span class="v-bar"></span>
+            <span class="v-bar"></span>
+            <span class="v-bar"></span>
+          </span>
+          <span>● &nbsp;Start recording</span>
+        </button>
+        <button id="stop" class="secondary" disabled>
+          <span class="btn-wave" aria-hidden="true">
+            <span class="v-bar"></span>
+            <span class="v-bar"></span>
+            <span class="v-bar"></span>
+          </span>
+          <span>■ &nbsp;Stop &amp; translate</span>
+        </button>
         <span id="timer" class="timer" aria-label="Recording duration">00:00</span>
       </div>
-      <label class="consent"><input type="checkbox" id="consent" /> I have permission to record and translate this speech. Audio is processed locally and discarded by the server after the request.</label>
+      <label class="consent">
+        <input type="checkbox" id="consent" />
+        <span>I have permission to record and translate this speech. Audio is processed locally and discarded by the server after the request.</span>
+      </label>
       <div class="visual" role="img" aria-label="Live microphone signal waveform">
         <div class="visual-head"><span>LIVE INPUT WAVEFORM</span><span id="level">LEVEL —</span></div>
         <canvas id="waveform" width="1000" height="116"></canvas>
       </div>
       <div id="status" class="status" role="status" aria-live="polite">Confirm recording permission to begin.</div>
-      <div class="file-row"><label for="file">OR USE A PRERECORDED WAV</label> <input type="file" id="file" accept=".wav,audio/wav" disabled /><button class="secondary" id="upload" disabled>Translate file</button><button class="quiet" id="saveRecording" disabled>Save recorded WAV</button></div>
+      <div class="file-row">
+        <label for="file">OR USE A PRERECORDED WAV</label>
+        <input type="file" id="file" accept=".wav,audio/wav" disabled />
+        <button class="secondary" id="upload" disabled>
+          <span class="btn-wave" aria-hidden="true"><span class="v-bar"></span><span class="v-bar"></span><span class="v-bar"></span></span>
+          <span>Translate file</span>
+        </button>
+        <button class="quiet" id="saveRecording" disabled>Save recorded WAV</button>
+      </div>
       <audio id="sourcePlayback" controls class="player" hidden aria-label="Play source audio"></audio>
     </section>
+
+    <!-- Continuous Live Conversation Section -->
     <section class="surface live-section" aria-labelledby="liveTitle">
       <div class="section-title" id="liveTitle"><span>LIVE</span> Continuous conversation research mode <span id="liveBadge" class="tiny-badge">STOPPED</span></div>
       <p class="subdued">Listen continuously. Voice activity detection selects turn boundaries; tentative text is generated from periodic complete-window ASR passes. Final translation and speech playback occur after a pause. Output is <strong>not</strong> token-level simultaneous interpretation.</p>
       <div class="controls live-controls">
-        <button id="liveStart" class="primary" disabled>Start continuous listening</button>
-        <button id="liveStop" class="secondary" disabled>Stop listening</button>
-        <label class="live-choice" for="liveAutoplay"><input id="liveAutoplay" type="checkbox" /> Auto-play translated turns</label>
+        <button id="liveStart" class="primary" disabled>
+          <span class="btn-wave" aria-hidden="true">
+            <span class="v-bar"></span>
+            <span class="v-bar"></span>
+            <span class="v-bar"></span>
+            <span class="v-bar"></span>
+            <span class="v-bar"></span>
+          </span>
+          <span>Start continuous listening</span>
+        </button>
+        <button id="liveStop" class="secondary" disabled>
+          <span class="btn-wave" aria-hidden="true">
+            <span class="v-bar"></span>
+            <span class="v-bar"></span>
+            <span class="v-bar"></span>
+          </span>
+          <span>Stop listening</span>
+        </button>
+        <label class="live-choice" for="liveAutoplay">
+          <input id="liveAutoplay" type="checkbox" />
+          <span>Auto-play translated turns</span>
+        </label>
         <button id="liveExport" class="quiet" disabled>Export session evidence</button>
         <button id="liveClear" class="quiet">Clear live history</button>
       </div>
-      <div class="live-summary"><span id="liveStatus" role="status" aria-live="polite">Confirm recording consent above to enable continuous listening.</span><span id="liveStats" class="subdued">0 turns · 0 dropped</span></div>
+      <div class="live-summary">
+        <span id="liveStatus" role="status" aria-live="polite">Confirm recording consent above to enable continuous listening.</span>
+        <span id="liveStats" class="subdued">0 turns · 0 dropped</span>
+      </div>
       <div class="live-preview">
         <span>PROVISIONAL ASR — MAY CHANGE</span>
         <div id="liveStable" class="live-stable">Waiting for speech…</div>
         <div id="livePartial" class="live-partial"></div>
       </div>
       <div class="section-title"><span>HISTORY</span> Completed translated turns</div>
-      <div id="liveHistory" class="live-history" aria-live="polite"><p class="subdued">No recorded turns in this session.</p></div>
+      <div id="liveHistory" class="live-history" aria-live="polite">
+        <p class="subdued">No recorded turns in this session.</p>
+      </div>
     </section>
+
+    <!-- Results Grid -->
     <div class="panel-grid" aria-label="Translation results">
       <section class="surface text-card">
         <div class="section-title"><span>02</span> Original transcription</div>
@@ -74,33 +164,57 @@
         <span class="locale" id="targetLang">MANDARIN CHINESE</span>
       </section>
     </div>
+
+    <!-- Audio Output Section -->
     <section class="surface audio-section">
-      <div class="audio-heading"><div><div class="section-title"><span>04</span> Listen to translated speech</div><p id="ttsState" class="subdued">No translated speech generated yet.</p></div><button id="clear" class="quiet">Clear session</button></div>
-      <div class="output-bar"><label for="outputDevice">Playback output</label><select id="outputDevice"><option value="default">System default</option></select><button id="refreshOutputs" class="quiet">Refresh devices</button><div id="voiceState" class="voice-state">Checking installed voices…</div></div>
+      <div class="audio-heading">
+        <div>
+          <div class="section-title"><span>04</span> Listen to translated speech</div>
+          <p id="ttsState" class="subdued">No translated speech generated yet.</p>
+        </div>
+        <button id="clear" class="quiet">Clear session</button>
+      </div>
+      <div class="output-bar">
+        <label for="outputDevice">Playback output</label>
+        <select id="outputDevice"><option value="default">System default</option></select>
+        <button id="refreshOutputs" class="quiet">Refresh devices</button>
+        <div id="voiceState" class="voice-state">Checking installed voices…</div>
+      </div>
       <audio id="playback" controls class="player" hidden aria-label="Listen to translated speech"></audio>
       <div id="metrics" class="metrics" aria-live="polite">No timing evidence yet.</div>
-      <button id="saveEvidence" class="secondary" disabled>Export current result JSON</button>
+      <button id="saveEvidence" class="secondary" disabled>
+        <span class="btn-wave" aria-hidden="true"><span class="v-bar"></span><span class="v-bar"></span><span class="v-bar"></span></span>
+        <span>Export current result JSON</span>
+      </button>
     </section>
+
+    <!-- SOTA Diagnostics & Hardware Calibration -->
     <section class="surface sota-section" aria-labelledby="sotaTitle">
       <div class="audio-heading">
         <div>
-          <div class="section-title" id="sotaTitle"><span>SOTA</span> Hardware Calibration & Real-Time Diagnostics</div>
+          <div class="section-title" id="sotaTitle"><span>SOTA</span> Hardware Calibration &amp; Real-Time Diagnostics</div>
           <p id="sotaState" class="subdued">Calibrated physical mouth-to-ear delay, anti-hallucination guardrails and zero-switch LID.</p>
         </div>
-        <div style="display:flex; gap:0.5rem; align-items:center;">
+        <div class="sota-actions">
           <label class="live-choice" for="autoLidToggle"><input id="autoLidToggle" type="checkbox" checked /> Auto-LID (Zero-Switch)</label>
-          <button id="runCalibration" class="secondary">Measure Hardware Latency</button>
+          <button id="runCalibration" class="secondary">
+            <span class="btn-wave" aria-hidden="true"><span class="v-bar"></span><span class="v-bar"></span><span class="v-bar"></span></span>
+            <span>Measure Hardware Latency</span>
+          </button>
         </div>
       </div>
-      <div class="output-bar" style="margin-top:0.5rem; gap:0.75rem; flex-wrap:wrap;">
+      <div class="output-bar sota-badges">
         <span id="badgeLatency" class="tiny-badge">PHYSICAL LATENCY: UNCALIBRATED</span>
-        <span id="badgeGuardrails" class="tiny-badge" style="background:#0f5132; color:#d1e7dd;">GUARDRAILS: ACTIVE</span>
-        <span id="badgeLid" class="tiny-badge" style="background:#055160; color:#cff4fc;">ZERO-SWITCH LID: ENABLED</span>
-        <span id="badgeDucking" class="tiny-badge" style="background:#3d2f0a; color:#ffe69c;">CONVERSATIONAL DUCKING: 25MS</span>
+        <span id="badgeGuardrails" class="tiny-badge badge-guardrails">GUARDRAILS: ACTIVE</span>
+        <span id="badgeLid" class="tiny-badge badge-lid">ZERO-SWITCH LID: ENABLED</span>
+        <span id="badgeDucking" class="tiny-badge badge-ducking">CONVERSATIONAL DUCKING: 25MS</span>
       </div>
-      <div id="calibrationResult" class="metrics subdued" style="margin-top:0.5rem;">Click 'Measure Hardware Latency' to test physical CoreAudio loopback time-of-flight.</div>
+      <div id="calibrationResult" class="metrics subdued calibration-metrics">Click 'Measure Hardware Latency' to test physical CoreAudio loopback time-of-flight.</div>
     </section>
-    <footer>Research prototype. Continuous mode is utterance-segmented, and ASR previews are unstable whole-window reruns. No hearing-aid, legal, medical or safety-critical interpretation claims. Browser and model timings are <strong>not</strong> acoustic mouth-to-ear delay. Model weights must be prepared online once; offline execution and network isolation require separate verification. Audio is not stored by the local server after processing. Downloaded evidence may contain private speech transcripts.</footer>
+
+    <footer>
+      Research prototype. Continuous mode is utterance-segmented, and ASR previews are unstable whole-window reruns. No hearing-aid, legal, medical or safety-critical interpretation claims. Browser and model timings are <strong>not</strong> acoustic mouth-to-ear delay. Model weights must be prepared online once; offline execution and network isolation require separate verification. Audio is not stored by the local server after processing. Downloaded evidence may contain private speech transcripts.
+    </footer>
   </main>
 </body>
 </html>

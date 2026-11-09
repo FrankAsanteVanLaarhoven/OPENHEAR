@@ -52,6 +52,19 @@
     if(state.active && ui.playback && !ui.playback.paused && peak > 0.08){
       ui.playback.volume = Math.max(0.1, ui.playback.volume * 0.75);
     }
+    // Live Voice-Reactive Equalizer Bars
+    if(state.active){
+      const bars = ui.record.querySelectorAll('.v-bar');
+      bars.forEach((bar, idx) => {
+        const heightMultiplier = Math.min(2.8, Math.max(0.4, rms * 14 * (0.8 + 0.4 * Math.sin(Date.now() / 60 + idx))));
+        bar.style.transform = `scaleY(${heightMultiplier})`;
+      });
+      const medallion = $('heroMedallion');
+      if (medallion && peak > 0.05) {
+        const rings = medallion.querySelectorAll('.sound-ring');
+        rings.forEach(r => r.style.borderColor = `rgba(0, 240, 255, ${Math.min(0.9, peak * 2)})`);
+      }
+    }
   }
   async function stopMicrophone() {
     if(!state.active)return null;
@@ -216,8 +229,7 @@
       const data=await measureResp.json();
       const delay=data.measured_delay_ms, status=data.budget?.status||'UNKNOWN';
       ui.badgeLatency.textContent=`PHYSICAL LATENCY: ${delay}ms (${status})`;
-      ui.badgeLatency.style.background=status==='EXCELLENT'?'#0f5132':status==='ACCEPTABLE'?'#3d2f0a':'#842029';
-      ui.badgeLatency.style.color='#fff';
+      ui.badgeLatency.className = `tiny-badge ${status==='EXCELLENT' ? 'badge-success' : status==='ACCEPTABLE' ? 'badge-warning' : 'badge-danger'}`;
       ui.calibrationResult.textContent=`Measured Physical Loopback Delay: ${delay} ms (Confidence: ${(data.confidence*100).toFixed(1)}%). ITU-T G.114 Status: ${status}.`;
     }catch(err){
       ui.calibrationResult.textContent=`Calibration note: ${err.message}.`;
@@ -240,6 +252,41 @@
   ui.clear.addEventListener('click',clearSession);
   ui.saveRecording.addEventListener('click',()=>{if(state.lastWav)downloadFile(state.lastWav,`openhear-${ui.direction.value.replace(':','-')}-${new Date().toISOString().replaceAll(':','-')}.wav`);});
   ui.saveEvidence.addEventListener('click',()=>{if(state.lastEvidence)downloadFile(new Blob([JSON.stringify(state.lastEvidence,null,2)],{type:'application/json'}),`openhear-evidence-${new Date().toISOString().replaceAll(':','-')}.json`);});
+  // Scroll-Driven Audio Equalizer Modulation
+  let lastScrollY = window.scrollY, scrollTimer = null;
+  window.addEventListener('scroll', () => {
+    const delta = Math.abs(window.scrollY - lastScrollY);
+    lastScrollY = window.scrollY;
+    if (delta > 2) {
+      const bars = document.querySelectorAll('.v-bar');
+      bars.forEach((bar, idx) => {
+        const factor = Math.min(2.4, 0.7 + delta * 0.04 * (1 + 0.3 * Math.sin(idx)));
+        bar.style.transform = `scaleY(${factor})`;
+      });
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        if (!state.active) {
+          document.querySelectorAll('.v-bar').forEach(b => b.style.transform = '');
+        }
+      }, 220);
+    }
+  }, { passive: true });
+
+  // 3D Parallax Tilt for Hero Medallion
+  const medallionStage = $('heroMedallion');
+  if (medallionStage) {
+    const dish = medallionStage.querySelector('.medallion-dish');
+    medallionStage.addEventListener('mousemove', e => {
+      const rect = medallionStage.getBoundingClientRect();
+      const nx = (e.clientX - rect.left) / rect.width - 0.5;
+      const ny = (e.clientY - rect.top) / rect.height - 0.5;
+      dish.style.transform = `rotateX(${28 - ny * 26}deg) rotateY(${-18 + nx * 30}deg) rotateZ(${6 - nx * 8}deg) scale(1.03)`;
+    });
+    medallionStage.addEventListener('mouseleave', () => {
+      dish.style.transform = '';
+    });
+  }
+
   window.addEventListener('beforeunload',()=>{if(state.mic)state.mic.getTracks().forEach(t=>t.stop());for(const k of ['inputUrl','outputUrl'])clearUrl(k);});
   setDirection();waveform();update();void checkVoices();void refreshOutputs();
 })();

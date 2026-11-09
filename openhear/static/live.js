@@ -42,6 +42,13 @@
     ui.level.textContent=`LIVE RMS ${Math.round(100*rms)}% · PEAK ${Math.round(100*peak)}%`;
     const t=Math.floor((performance.now()-state.startAt)/1000);
     ui.timer.textContent=`${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;
+    if (state.listening) {
+      const bars = ui.liveStart.querySelectorAll('.v-bar');
+      bars.forEach((bar, idx) => {
+        const mult = state.speech ? Math.min(2.8, Math.max(0.6, rms * 16 * (0.8 + 0.4 * Math.sin(idx)))) : 0.6;
+        bar.style.transform = `scaleY(${mult})`;
+      });
+    }
   }
   function monoRms(frame) {
     let power=0;for(let i=0;i<frame.length;i++)power+=frame[i]*frame[i];

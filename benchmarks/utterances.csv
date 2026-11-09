@@ -1,0 +1,7 @@
+id,source,target,audio_path,reference_transcript,reference_translation,speaker_id,accent,condition
+en-zh-001,en,zh,audio/en-zh-001.wav,"Good morning, welcome to our simultaneous translation trial.",早上好，欢迎参加我们的同传测试。,spk-001,standard,clean
+en-zh-002,en,zh,audio/en-zh-002.wav,The total cost of the project is twenty-five thousand dollars.,该项目的总成本为两万五千美元。,spk-001,standard,clean
+en-zh-003,en,zh,audio/en-zh-003.wav,Could you please send me the updated meeting schedule?,您能把更新后的会议日程发给我吗？,spk-001,standard,clean
+zh-en-001,zh,en,audio/zh-en-001.wav,早上好，很高兴今天能够在这里与你交谈。,"Good morning, it is a pleasure to speak with you here today.",spk-002,standard,clean
+zh-en-002,zh,en,audio/zh-en-002.wav,这个系统的延迟大约在五百毫秒以内。,The latency of this system is approximately within five hundred milliseconds.,spk-002,standard,clean
+zh-en-003,zh,en,audio/zh-en-003.wav,我们必须确保所有的测试数据都是真实有效的。,We must ensure that all test data is genuine and valid.,spk-002,standard,clean

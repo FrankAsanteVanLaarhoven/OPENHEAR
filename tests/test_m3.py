@@ -153,6 +153,38 @@ class TestSotaCLI(unittest.TestCase):
         output = json.loads(buf.getvalue())
         self.assertTrue(output["is_hallucination"])
 
+    def test_benchmark_populate_and_report(self):
+        import tempfile
+        from pathlib import Path
+        from openhear.benchmark import generate_markdown_report
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            csv_path = Path(tmp_dir) / "test_manifest.csv"
+            buf = io.StringIO()
+            with redirect_stdout(buf):
+                main(["benchmark", "populate", "--dataset", str(csv_path), "--per-direction", "2", "--no-tts"])
+            self.assertTrue(csv_path.exists())
+            # Test Markdown report generator
+            mock_report = {
+                "captured_utc": "2026-11-09T00:00:00Z",
+                "engine_type": "Whisper/Marian",
+                "summary": {
+                    "en-zh": {
+                        "completed": 2, "planned": 2,
+                        "translation_bleu_mean": 28.5,
+                        "translation_chrf_plus_plus": 45.2,
+                        "asr_wer_mean": 0.05,
+                        "asr_cer_mean": 0.02,
+                        "time_ms": {"total": {"p50": 450.0, "p95": 600.0}},
+                        "hallucinations_detected": 0
+                    }
+                }
+            }
+            md = generate_markdown_report(mock_report)
+            self.assertIn("en-zh", md)
+            self.assertIn("28.5", md)
+            self.assertIn("Leaderboard", md)
+
 
 if __name__ == "__main__":
     unittest.main()
+

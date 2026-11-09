@@ -136,15 +136,22 @@ def main(argv=None):
         command.add_argument("--speech-rate", type=int, default=175)
     benchmark = commands.add_parser("benchmark", help="Feasibility dataset template and local evaluation")
     subs = benchmark.add_subparsers(dest="bench_action", required=True)
-    init = subs.add_parser("init", help="Create 20 empty record slots per direction (no fabricated data)")
+    init = subs.add_parser("init", help="Create empty record slots per direction (no fabricated data)")
     init.add_argument("--dataset", default="benchmarks/utterances.csv")
     init.add_argument("--per-direction", type=int, default=20)
+    pop = subs.add_parser("populate", help="Populate executable benchmark audio and golden references")
+    pop.add_argument("--dataset", default="benchmarks/utterances.csv")
+    pop.add_argument("--per-direction", type=int, default=5)
+    pop.add_argument("--no-tts", action="store_true", help="Use synthetic audio instead of native voice")
     run = subs.add_parser("run", help="Evaluate completed CSV records with local models")
     run.add_argument("--dataset", default="benchmarks/utterances.csv")
     run.add_argument("--models-dir", default="models")
     run.add_argument("--device", choices=["auto", "cpu", "mps"], default="auto")
     run.add_argument("--report", default="benchmark-report.json")
     run.add_argument("--allow-incomplete", action="store_true")
+    rep = subs.add_parser("report", help="Format JSON report into a Markdown leaderboard table")
+    rep.add_argument("--report", required=True)
+    rep.add_argument("--output", default=None)
     calibrate = commands.add_parser("calibrate", help="Acoustic hardware loopback calibration")
     calibrate.add_argument("--chirp-out", default=None, help="Generate calibration chirp WAV file")
     calibrate.add_argument("--test-latency", action="store_true", help="Run synthetic loopback validation")
@@ -255,6 +262,21 @@ def main(argv=None):
     if args.action == "benchmark" and args.bench_action == "init":
         from .benchmark import init_manifest
         print("Created empty research dataset:", init_manifest(args.dataset, args.per_direction))
+        return
+    if args.action == "benchmark" and args.bench_action == "populate":
+        from .benchmark import populate_benchmark_fixtures
+        path = populate_benchmark_fixtures(args.dataset, per_direction=args.per_direction, use_tts=not args.no_tts)
+        print(f"Populated benchmark dataset with audio: {path}")
+        return
+    if args.action == "benchmark" and args.bench_action == "report":
+        from .benchmark import generate_markdown_report
+        report_data = json.loads(Path(args.report).read_text(encoding="utf-8"))
+        md = generate_markdown_report(report_data)
+        if args.output:
+            Path(args.output).write_text(md, encoding="utf-8")
+            print(f"Benchmark Markdown report written to: {args.output}")
+        else:
+            print(md)
         return
     if args.action == "prepare":
         # Preparing is the ONLY path permitted to contact Hugging Face.

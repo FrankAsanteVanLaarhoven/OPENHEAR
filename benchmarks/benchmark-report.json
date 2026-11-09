@@ -1,0 +1,232 @@
+{
+  "schema_version": "0.3",
+  "research_stage": "feasibility_not_clinical",
+  "method": "post-utterance processing wall time; not acoustic end-to-end latency",
+  "captured_utc": "2026-11-09T02:01:07.981535+00:00",
+  "python": "3.11.4",
+  "dataset": "/Users/favl/Downloads/openhear-bridge-m2-alpha/benchmarks/utterances.csv",
+  "model_manifest_sha256": "cce838aa016ed270fa680fcd5d5d6b048616e8681df1018e6f713b56c00a991b",
+  "engine_type": "LocalWhisperASR/LocalMarianMT",
+  "privacy_notice": "Contains reference, transcript and translated text. Store securely; do not publish participant-identifiable data.",
+  "score_note": "chrF++ is reference-based text similarity, NOT a certified semantic or human intelligibility score. WER shown only for English source. Percentiles at N=20 remain unstable.",
+  "summary": {
+    "en-zh": {
+      "planned": 3,
+      "attempted": 3,
+      "completed": 3,
+      "failed": 0,
+      "pending_or_missing": 0,
+      "completion_rate_attempted": 1.0,
+      "asr_cer_mean": 0.1634,
+      "asr_wer_mean": 0.1,
+      "translation_bleu_mean": 19.4,
+      "translation_chrf_plus_plus": 18.534,
+      "hallucinations_detected": 0,
+      "time_ms": {
+        "asr": {
+          "p50": 326.55,
+          "p95": 355.251,
+          "p99": 357.802
+        },
+        "mt": {
+          "p50": 291.96,
+          "p95": 309.339,
+          "p99": 310.884
+        },
+        "tts": {
+          "p50": 0.0,
+          "p95": 0.0,
+          "p99": 0.0
+        },
+        "total": {
+          "p50": 607.73,
+          "p95": 663.512,
+          "p99": 668.47
+        }
+      },
+      "feasibility_min_20_completed": false
+    },
+    "zh-en": {
+      "planned": 3,
+      "attempted": 3,
+      "completed": 3,
+      "failed": 0,
+      "pending_or_missing": 0,
+      "completion_rate_attempted": 1.0,
+      "asr_cer_mean": 0.3051,
+      "asr_wer_mean": null,
+      "translation_bleu_mean": 21.05,
+      "translation_chrf_plus_plus": 49.325,
+      "hallucinations_detected": 0,
+      "time_ms": {
+        "asr": {
+          "p50": 483.55,
+          "p95": 498.589,
+          "p99": 499.926
+        },
+        "mt": {
+          "p50": 413.81,
+          "p95": 531.062,
+          "p99": 541.484
+        },
+        "tts": {
+          "p50": 0.0,
+          "p95": 0.0,
+          "p99": 0.0
+        },
+        "total": {
+          "p50": 914.06,
+          "p95": 992.495,
+          "p99": 999.467
+        }
+      },
+      "feasibility_min_20_completed": false
+    }
+  },
+  "utterances": [
+    {
+      "id": "en-zh-001",
+      "source": "en",
+      "target": "zh",
+      "speaker_id": "spk-001",
+      "accent": "standard",
+      "condition": "clean",
+      "status": "completed",
+      "transcript": "Good morning, welcome to our simultaneous translation trial.",
+      "translation": "早上好 欢迎来到我们同时进行的翻译审判",
+      "timings_ms": {
+        "asr": 358.44,
+        "mt": 311.27,
+        "tts": 0.0,
+        "total": 669.71
+      },
+      "reference_transcript": "Good morning, welcome to our simultaneous translation trial.",
+      "reference_translation": "早上好，欢迎参加我们的同传测试。",
+      "asr_cer": 0.0,
+      "asr_wer": 0.0,
+      "translation_bleu": 0.28,
+      "is_hallucination": false,
+      "hallucination_reason": "clean"
+    },
+    {
+      "id": "en-zh-002",
+      "source": "en",
+      "target": "zh",
+      "speaker_id": "spk-001",
+      "accent": "standard",
+      "condition": "clean",
+      "status": "completed",
+      "transcript": "The total cost of the project is $25,000.",
+      "translation": "该项目的总费用为25 000美元。",
+      "timings_ms": {
+        "asr": 326.55,
+        "mt": 279.91,
+        "tts": 0.0,
+        "total": 606.47
+      },
+      "reference_transcript": "The total cost of the project is twenty-five thousand dollars.",
+      "reference_translation": "该项目的总成本为两万五千美元。",
+      "asr_cer": 0.49019607843137253,
+      "asr_wer": 0.3,
+      "translation_bleu": 29.49,
+      "is_hallucination": false,
+      "hallucination_reason": "clean"
+    },
+    {
+      "id": "en-zh-003",
+      "source": "en",
+      "target": "zh",
+      "speaker_id": "spk-001",
+      "accent": "standard",
+      "condition": "clean",
+      "status": "completed",
+      "transcript": "Could you please send me the updated meeting schedule?",
+      "translation": "能把更新的会议时间表寄给我吗?",
+      "timings_ms": {
+        "asr": 315.77,
+        "mt": 291.96,
+        "tts": 0.0,
+        "total": 607.73
+      },
+      "reference_transcript": "Could you please send me the updated meeting schedule?",
+      "reference_translation": "您能把更新后的会议日程发给我吗？",
+      "asr_cer": 0.0,
+      "asr_wer": 0.0,
+      "translation_bleu": 28.44,
+      "is_hallucination": false,
+      "hallucination_reason": "clean"
+    },
+    {
+      "id": "zh-en-001",
+      "source": "zh",
+      "target": "en",
+      "speaker_id": "spk-002",
+      "accent": "standard",
+      "condition": "clean",
+      "status": "completed",
+      "transcript": "早上好,很高興今天能夠在這裡與你交談。",
+      "translation": "Good morning, it's good to be here to talk to you today.",
+      "timings_ms": {
+        "asr": 457.12,
+        "mt": 544.09,
+        "tts": 0.0,
+        "total": 1001.21
+      },
+      "reference_transcript": "早上好，很高兴今天能够在这里与你交谈。",
+      "reference_translation": "Good morning, it is a pleasure to speak with you here today.",
+      "asr_cer": 0.35294117647058826,
+      "asr_wer": null,
+      "translation_bleu": 0.0,
+      "is_hallucination": false,
+      "hallucination_reason": "clean"
+    },
+    {
+      "id": "zh-en-002",
+      "source": "zh",
+      "target": "en",
+      "speaker_id": "spk-002",
+      "accent": "standard",
+      "condition": "clean",
+      "status": "completed",
+      "transcript": "這個系統的延遲大約在500毫秒以內",
+      "translation": "The delay in the system is about 500 milliseconds.",
+      "timings_ms": {
+        "asr": 500.26,
+        "mt": 413.81,
+        "tts": 0.0,
+        "total": 914.06
+      },
+      "reference_transcript": "这个系统的延迟大约在五百毫秒以内。",
+      "reference_translation": "The latency of this system is approximately within five hundred milliseconds.",
+      "asr_cer": 0.5625,
+      "asr_wer": null,
+      "translation_bleu": 0.0,
+      "is_hallucination": false,
+      "hallucination_reason": "clean"
+    },
+    {
+      "id": "zh-en-003",
+      "source": "zh",
+      "target": "en",
+      "speaker_id": "spk-002",
+      "accent": "standard",
+      "condition": "clean",
+      "status": "completed",
+      "transcript": "我们必须确保所有的测试数据都是真实有效的。",
+      "translation": "We must ensure that all test data are real and valid.",
+      "timings_ms": {
+        "asr": 483.55,
+        "mt": 367.46,
+        "tts": 0.0,
+        "total": 851.01
+      },
+      "reference_transcript": "我们必须确保所有的测试数据都是真实有效的。",
+      "reference_translation": "We must ensure that all test data is genuine and valid.",
+      "asr_cer": 0.0,
+      "asr_wer": null,
+      "translation_bleu": 63.16,
+      "is_hallucination": false,
+      "hallucination_reason": "clean"
+    }
+  ]
+}

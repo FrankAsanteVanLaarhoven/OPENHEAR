@@ -54,24 +54,38 @@ class Runtime:
                 if audio_bytes is not None and len(audio_bytes) > 8 * 1024 * 1024:
                     raise RuntimeError("Generated speech exceeds audio response limit")
                 encoded = base64.b64encode(audio_bytes).decode() if audio_bytes else None
-                return {"schema_version": "0.3", "request_id": result.request_id,
+
+                # SOTA anti-hallucination and conversational backchannel verification
+                from .guardrails import is_phantom_hallucination, sanitize_hypothesis
+                from .dialogue import is_backchannel
+                is_hal, hal_reason = is_phantom_hallucination(result.transcript)
+                backchannel = is_backchannel(result.transcript, source)
+                sanitized_transcript = sanitize_hypothesis(result.transcript) if is_hal else result.transcript
+
+                return {"schema_version": "0.4", "request_id": result.request_id,
                         "source_language": source, "target_language": target,
-                        "transcript": result.transcript, "translation": result.translation,
+                        "transcript": sanitized_transcript,
+                        "raw_transcript": result.transcript,
+                        "translation": result.translation,
                         "timings_ms": result.timings_ms,
-                        "latency_note": "Software processing only; NOT microphone-to-earbud latency",
+                        "latency_note": "Software processing only; NOT calibrated physical mouth-to-ear latency",
                         "audio_base64": encoded,
                         "audio_mime": "audio/wav" if encoded else None,
                         "tts_status": result.tts_status,
                         "tts_error": result.tts_error,
                         "status": result.status,
-                        "mode": "local-models"}
+                        "mode": "local-models",
+                        "is_hallucination": is_hal,
+                        "hallucination_reason": hal_reason,
+                        "is_backchannel": backchannel,
+                        "guardrail_status": "sanitized" if is_hal else "clean"}
         finally:
             self.lock.release()
 
 
 def create_app(runtime_factory):
     from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Request
-    from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
+    from fastapi.responses import HTMLResponse, JSONResponse, FileResponse, Response
     from starlette.concurrency import run_in_threadpool
 
     runtime = Runtime(runtime_factory)
@@ -126,6 +140,57 @@ def create_app(runtime_factory):
         return JSONResponse({"vad": VADPolicy().public(),
                              "mode": "vad-segmented-best-effort",
                              "warning": "Partial ASR is full-window provisional, and final speech is generated after each turn; not simultaneous interpreting"},
+                            headers={"Cache-Control": "no-store"})
+
+    @app.get("/api/calibrate/chirp")
+    def calibrate_chirp():
+        from .calibration import generate_calibration_chirp
+        from .audio import write_wav_bytes
+        chirp = generate_calibration_chirp()
+        return Response(content=write_wav_bytes(chirp, 16000), media_type="audio/wav",
+                        headers={"Cache-Control": "no-store"})
+
+    @app.post("/api/calibrate/measure")
+    async def calibrate_measure(request: Request, audio: UploadFile = File(...)):
+        from .calibration import generate_calibration_chirp, detect_loopback_latency_ms, evaluate_latency_budget
+        from .audio import load_speech
+        chirp = generate_calibration_chirp()
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=True) as temp:
+            content = await audio.read()
+            temp.write(content)
+            temp.flush()
+            try:
+                rec = load_speech(temp.name)
+                delay_ms, conf = detect_loopback_latency_ms(chirp, rec)
+                budget = evaluate_latency_budget(delay_ms)
+                return JSONResponse({"measured_delay_ms": delay_ms, "confidence": conf, "budget": budget},
+                                    headers={"Cache-Control": "no-store"})
+            except Exception as exc:
+                raise HTTPException(422, f"Could not analyze loopback audio: {exc}") from exc
+
+    @app.post("/api/lid")
+    async def language_id(request: Request, text: str = Form(None)):
+        from .lid import detect_script_language, auto_direction_for_input
+        if text:
+            src, conf = detect_script_language(text)
+            s, t = auto_direction_for_input(text)
+            return JSONResponse({"detected": src, "confidence": conf, "source": s, "target": t, "direction": f"{s}:{t}"},
+                                headers={"Cache-Control": "no-store"})
+        return JSONResponse({"detected": "en", "confidence": 0.5, "source": "en", "target": "zh", "direction": "en:zh"},
+                            headers={"Cache-Control": "no-store"})
+
+    @app.get("/api/benchmarks/summary")
+    def benchmarks_summary():
+        bench_file = Path(__file__).parent.parent / "benchmarks" / "benchmark-report.json"
+        if bench_file.exists():
+            try:
+                data = json.loads(bench_file.read_text(encoding="utf-8"))
+                return JSONResponse({"available": True, "summary": data.get("summary", {}),
+                                     "captured_utc": data.get("captured_utc")},
+                                    headers={"Cache-Control": "no-store"})
+            except Exception:
+                pass
+        return JSONResponse({"available": False, "message": "No benchmark report yet"},
                             headers={"Cache-Control": "no-store"})
 
     @app.post("/api/preview")

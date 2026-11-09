@@ -62,3 +62,4 @@ def estimate_acoustic_chunk_language(audio: np.ndarray, sample_rate: int = 16000
     if zcr < 0.08 and energy_var > 0.002:
         return 'zh'
     return 'en'
+

@@ -78,3 +78,4 @@ def sanitize_hypothesis(text: str, rms_energy: float = 1.0) -> str:
     if is_hallucination:
         return ""
     return text.strip()
+

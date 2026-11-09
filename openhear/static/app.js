@@ -1,8 +1,8 @@
 (() => {
   'use strict';
   const $ = id => document.getElementById(id);
-  const controls = ['record','stop','upload','file','consent','direction','saveRecording','clear','saveEvidence'];
-  const ui = Object.fromEntries([...controls,'status','waveform','level','timer','captureState','sourcePlayback','playback','transcript','translation','sourceLang','targetLang','ttsState','metrics','outputDevice','refreshOutputs','voiceState'].map(x => [x, $(x)]));
+  const controls = ['record','stop','upload','file','consent','direction','saveRecording','clear','saveEvidence','runCalibration','autoLidToggle'];
+  const ui = Object.fromEntries([...controls,'status','waveform','level','timer','captureState','sourcePlayback','playback','transcript','translation','sourceLang','targetLang','ttsState','metrics','outputDevice','refreshOutputs','voiceState','badgeLatency','calibrationResult'].map(x => [x, $(x)]));
   const state = {active:false, busy:false, mic:null, context:null, processor:null, src:null, analyser:null,
                  mute:null, blocks:[], rate:48000, start:0, raf:0, peaks:[], inputUrl:null,
                  outputUrl:null, lastWav:null, lastEvidence:null, recordStarted:null, liveActive:false};
@@ -49,6 +49,9 @@
     state.peaks.push(Math.min(1,peak));if(state.peaks.length>120)state.peaks.shift();
     ui.level.textContent = `RMS ${Math.round(100*rms)}% · PEAK ${Math.round(100*peak)}%`;
     ui.timer.textContent = formatElapsed(Date.now()-state.start);
+    if(state.active && ui.playback && !ui.playback.paused && peak > 0.08){
+      ui.playback.volume = Math.max(0.1, ui.playback.volume * 0.75);
+    }
   }
   async function stopMicrophone() {
     if(!state.active)return null;
@@ -190,7 +193,38 @@
     ui.ttsState.textContent='No translated speech generated yet.';ui.metrics.textContent='No timing evidence yet.';
     ui.file.value='';setStatus('Session cleared from this browser page.');update();
   }
+  async function runAcousticCalibration(){
+    if(state.active || state.busy)return;
+    ui.calibrationResult.textContent='Injecting acoustic chirp & measuring loopback...';
+    try {
+      const resp=await fetch('/api/calibrate/chirp',{cache:'no-store'});
+      const chirpBlob=await resp.blob(), chirpUrl=URL.createObjectURL(chirpBlob), audioEl=new Audio(chirpUrl);
+      const stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+      const mediaRecorder=new MediaRecorder(stream), chunks=[];
+      mediaRecorder.ondataavailable=e=>{if(e.data.size>0)chunks.push(e.data);};
+      const recordingPromise=new Promise(resolve=>{mediaRecorder.onstop=()=>resolve(new Blob(chunks,{type:'audio/wav'}));});
+      mediaRecorder.start();
+      await audioEl.play();
+      await new Promise(r=>setTimeout(r,450));
+      mediaRecorder.stop();
+      stream.getTracks().forEach(t=>t.stop());
+      URL.revokeObjectURL(chirpUrl);
+      const recordedBlob=await recordingPromise, form=new FormData();
+      form.append('audio',recordedBlob,'loopback.wav');
+      const measureResp=await fetch('/api/calibrate/measure',{method:'POST',body:form});
+      if(!measureResp.ok)throw new Error(`Measurement failed: ${measureResp.statusText}`);
+      const data=await measureResp.json();
+      const delay=data.measured_delay_ms, status=data.budget?.status||'UNKNOWN';
+      ui.badgeLatency.textContent=`PHYSICAL LATENCY: ${delay}ms (${status})`;
+      ui.badgeLatency.style.background=status==='EXCELLENT'?'#0f5132':status==='ACCEPTABLE'?'#3d2f0a':'#842029';
+      ui.badgeLatency.style.color='#fff';
+      ui.calibrationResult.textContent=`Measured Physical Loopback Delay: ${delay} ms (Confidence: ${(data.confidence*100).toFixed(1)}%). ITU-T G.114 Status: ${status}.`;
+    }catch(err){
+      ui.calibrationResult.textContent=`Calibration note: ${err.message}.`;
+    }
+  }
   document.addEventListener('openhear:live-change', e => { state.liveActive=Boolean(e.detail?.active);update(); });
+  ui.runCalibration?.addEventListener('click',runAcousticCalibration);
   ui.direction.addEventListener('change',setDirection);
   ui.consent.addEventListener('change',update);
   ui.file.addEventListener('change',update);

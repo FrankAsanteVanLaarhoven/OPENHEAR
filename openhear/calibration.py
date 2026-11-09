@@ -68,3 +68,4 @@ def evaluate_latency_budget(delay_ms: float) -> dict[str, any]:
         "itu_g114_compliant": delay_ms < 150.0,
         "human_conversational_pacing": delay_ms < 400.0,
     }
+

@@ -50,6 +50,7 @@ def validate_uploaded_wav(audio: bytes) -> None:
 def write_wav_bytes(audio: np.ndarray, sample_rate: int = 16000) -> bytes:
     """Encode float32 PCM numpy array into standard 16-bit PCM RIFF/WAVE bytes."""
     import io
+    import numpy as np
     import soundfile as sf
     buf = io.BytesIO()
     clipped = np.clip(audio, -1.0, 1.0)

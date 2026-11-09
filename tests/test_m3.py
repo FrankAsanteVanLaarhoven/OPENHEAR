@@ -185,6 +185,43 @@ class TestSotaCLI(unittest.TestCase):
             self.assertIn("Leaderboard", md)
 
 
+class TestSotaWebAPI(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from starlette.testclient import TestClient
+        from openhear.web import create_app
+        # Mock runtime factory
+        class MockBridge:
+            asr = None
+            translator = None
+            tts = None
+        cls.client = TestClient(create_app(lambda: MockBridge()))
+
+    def test_calibrate_chirp_route(self):
+        resp = self.client.get("/api/calibrate/chirp")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.headers["content-type"], "audio/wav")
+        self.assertGreater(len(resp.content), 1000)
+
+    def test_lid_route(self):
+        resp = self.client.post("/api/lid", data={"text": "Hello this is English"})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["detected"], "en")
+        self.assertEqual(data["direction"], "en:zh")
+
+        resp_zh = self.client.post("/api/lid", data={"text": "你好世界"})
+        self.assertEqual(resp_zh.status_code, 200)
+        self.assertEqual(resp_zh.json()["detected"], "zh")
+        self.assertEqual(resp_zh.json()["direction"], "zh:en")
+
+    def test_benchmarks_summary_route(self):
+        resp = self.client.get("/api/benchmarks/summary")
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertIn("available", data)
+
+
 if __name__ == "__main__":
     unittest.main()
 

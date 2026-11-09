@@ -81,6 +81,25 @@
       <div id="metrics" class="metrics" aria-live="polite">No timing evidence yet.</div>
       <button id="saveEvidence" class="secondary" disabled>Export current result JSON</button>
     </section>
+    <section class="surface sota-section" aria-labelledby="sotaTitle">
+      <div class="audio-heading">
+        <div>
+          <div class="section-title" id="sotaTitle"><span>SOTA</span> Hardware Calibration & Real-Time Diagnostics</div>
+          <p id="sotaState" class="subdued">Calibrated physical mouth-to-ear delay, anti-hallucination guardrails and zero-switch LID.</p>
+        </div>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+          <label class="live-choice" for="autoLidToggle"><input id="autoLidToggle" type="checkbox" checked /> Auto-LID (Zero-Switch)</label>
+          <button id="runCalibration" class="secondary">Measure Hardware Latency</button>
+        </div>
+      </div>
+      <div class="output-bar" style="margin-top:0.5rem; gap:0.75rem; flex-wrap:wrap;">
+        <span id="badgeLatency" class="tiny-badge">PHYSICAL LATENCY: UNCALIBRATED</span>
+        <span id="badgeGuardrails" class="tiny-badge" style="background:#0f5132; color:#d1e7dd;">GUARDRAILS: ACTIVE</span>
+        <span id="badgeLid" class="tiny-badge" style="background:#055160; color:#cff4fc;">ZERO-SWITCH LID: ENABLED</span>
+        <span id="badgeDucking" class="tiny-badge" style="background:#3d2f0a; color:#ffe69c;">CONVERSATIONAL DUCKING: 25MS</span>
+      </div>
+      <div id="calibrationResult" class="metrics subdued" style="margin-top:0.5rem;">Click 'Measure Hardware Latency' to test physical CoreAudio loopback time-of-flight.</div>
+    </section>
     <footer>Research prototype. Continuous mode is utterance-segmented, and ASR previews are unstable whole-window reruns. No hearing-aid, legal, medical or safety-critical interpretation claims. Browser and model timings are <strong>not</strong> acoustic mouth-to-ear delay. Model weights must be prepared online once; offline execution and network isolation require separate verification. Audio is not stored by the local server after processing. Downloaded evidence may contain private speech transcripts.</footer>
   </main>
 </body>

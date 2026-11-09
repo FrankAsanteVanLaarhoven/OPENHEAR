@@ -95,3 +95,4 @@ def sentence_bleu(reference: str, hypothesis: str, max_n: int = 4) -> float:
     # Brevity penalty
     bp = 1.0 if len(hyp_tokens) > len(ref_tokens) else math.exp(1.0 - (len(ref_tokens) / max(len(hyp_tokens), 1)))
     return round(bp * math.exp(log_sum) * 100.0, 2)
+

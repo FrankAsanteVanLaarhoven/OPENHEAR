@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenHear Bridge — Continuous Turn Translation Research</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <script src="/static/app.js" defer></script>
+  <script src="/static/live.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="top">
+      <div class="brand"><span class="logo" aria-hidden="true">◈</span><span>OPENHEAR <em>BRIDGE</em></span></div>
+      <div class="product-state">LOCAL RESEARCH · M1.2 / M2α · OFFLINE FIRST</div>
+    </header>
+    <div class="hero">
+      <div>
+        <div class="eyebrow">SPEECH-TO-SPEECH RESEARCH CONSOLE</div>
+        <h1>Understand across<br />languages.</h1>
+        <p>Speak naturally. See the original text and local translation. Listen to an English or Mandarin synthetic voice through your selected audio output.</p>
+      </div>
+      <aside class="capability" aria-label="Research scope">
+        <span class="dot"></span> Local models · English ⇄ Mandarin
+        <small>Push-to-talk + VAD-segmented live turns. Not simultaneous interpreting.</small>
+      </aside>
+    </div>
+    <section class="capture surface" aria-label="Microphone and input recording">
+      <div class="section-title"><span>01</span> Capture speech <span id="captureState" class="tiny-badge">READY</span></div>
+      <div class="controls">
+        <label class="sr-only" for="direction">Translation direction</label>
+        <select id="direction"><option value="en:zh">English → Mandarin</option><option value="zh:en">Mandarin → English</option></select>
+        <button id="record" class="primary" disabled>● &nbsp;Start recording</button>
+        <button id="stop" class="secondary" disabled>■ &nbsp;Stop &amp; translate</button>
+        <span id="timer" class="timer" aria-label="Recording duration">00:00</span>
+      </div>
+      <label class="consent"><input type="checkbox" id="consent" /> I have permission to record and translate this speech. Audio is processed locally and discarded by the server after the request.</label>
+      <div class="visual" role="img" aria-label="Live microphone signal waveform">
+        <div class="visual-head"><span>LIVE INPUT WAVEFORM</span><span id="level">LEVEL —</span></div>
+        <canvas id="waveform" width="1000" height="116"></canvas>
+      </div>
+      <div id="status" class="status" role="status" aria-live="polite">Confirm recording permission to begin.</div>
+      <div class="file-row"><label for="file">OR USE A PRERECORDED WAV</label> <input type="file" id="file" accept=".wav,audio/wav" disabled /><button class="secondary" id="upload" disabled>Translate file</button><button class="quiet" id="saveRecording" disabled>Save recorded WAV</button></div>
+      <audio id="sourcePlayback" controls class="player" hidden aria-label="Play source audio"></audio>
+    </section>
+    <section class="surface live-section" aria-labelledby="liveTitle">
+      <div class="section-title" id="liveTitle"><span>LIVE</span> Continuous conversation research mode <span id="liveBadge" class="tiny-badge">STOPPED</span></div>
+      <p class="subdued">Listen continuously. Voice activity detection selects turn boundaries; tentative text is generated from periodic complete-window ASR passes. Final translation and speech playback occur after a pause. Output is <strong>not</strong> token-level simultaneous interpretation.</p>
+      <div class="controls live-controls">
+        <button id="liveStart" class="primary" disabled>Start continuous listening</button>
+        <button id="liveStop" class="secondary" disabled>Stop listening</button>
+        <label class="live-choice" for="liveAutoplay"><input id="liveAutoplay" type="checkbox" /> Auto-play translated turns</label>
+        <button id="liveExport" class="quiet" disabled>Export session evidence</button>
+        <button id="liveClear" class="quiet">Clear live history</button>
+      </div>
+      <div class="live-summary"><span id="liveStatus" role="status" aria-live="polite">Confirm recording consent above to enable continuous listening.</span><span id="liveStats" class="subdued">0 turns · 0 dropped</span></div>
+      <div class="live-preview">
+        <span>PROVISIONAL ASR — MAY CHANGE</span>
+        <div id="liveStable" class="live-stable">Waiting for speech…</div>
+        <div id="livePartial" class="live-partial"></div>
+      </div>
+      <div class="section-title"><span>HISTORY</span> Completed translated turns</div>
+      <div id="liveHistory" class="live-history" aria-live="polite"><p class="subdued">No recorded turns in this session.</p></div>
+    </section>
+    <div class="panel-grid" aria-label="Translation results">
+      <section class="surface text-card">
+        <div class="section-title"><span>02</span> Original transcription</div>
+        <div id="transcript" class="text-result placeholder">Your speech will appear here.</div>
+        <span class="locale" id="sourceLang">ENGLISH</span>
+      </section>
+      <section class="surface text-card">
+        <div class="section-title"><span>03</span> Local translation</div>
+        <div id="translation" class="text-result placeholder">Translated text will appear here.</div>
+        <span class="locale" id="targetLang">MANDARIN CHINESE</span>
+      </section>
+    </div>
+    <section class="surface audio-section">
+      <div class="audio-heading"><div><div class="section-title"><span>04</span> Listen to translated speech</div><p id="ttsState" class="subdued">No translated speech generated yet.</p></div><button id="clear" class="quiet">Clear session</button></div>
+      <div class="output-bar"><label for="outputDevice">Playback output</label><select id="outputDevice"><option value="default">System default</option></select><button id="refreshOutputs" class="quiet">Refresh devices</button><div id="voiceState" class="voice-state">Checking installed voices…</div></div>
+      <audio id="playback" controls class="player" hidden aria-label="Listen to translated speech"></audio>
+      <div id="metrics" class="metrics" aria-live="polite">No timing evidence yet.</div>
+      <button id="saveEvidence" class="secondary" disabled>Export current result JSON</button>
+    </section>
+    <footer>Research prototype. Continuous mode is utterance-segmented, and ASR previews are unstable whole-window reruns. No hearing-aid, legal, medical or safety-critical interpretation claims. Browser and model timings are <strong>not</strong> acoustic mouth-to-ear delay. Model weights must be prepared online once; offline execution and network isolation require separate verification. Audio is not stored by the local server after processing. Downloaded evidence may contain private speech transcripts.</footer>
+  </main>
+</body>
+</html>

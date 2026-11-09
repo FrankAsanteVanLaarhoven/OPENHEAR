@@ -48,6 +48,9 @@
         const mult = state.speech ? Math.min(2.8, Math.max(0.6, rms * 16 * (0.8 + 0.4 * Math.sin(idx)))) : 0.6;
         bar.style.transform = `scaleY(${mult})`;
       });
+      if (typeof window.setEarbudVoiceEnergy === 'function') {
+        window.setEarbudVoiceEnergy(state.speech ? rms : 0.0, state.speech ? peak : 0.0);
+      }
     }
   }
   function monoRms(frame) {

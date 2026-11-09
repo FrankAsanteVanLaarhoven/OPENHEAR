@@ -305,44 +305,50 @@ body::after {
   box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
 }
 
-/* Levitating 3D Cloud & Acoustic Core */
-.cloud-floater {
+/* Levitating 3D Earbud (360° Interactive WebGL Showcase) */
+.earbud-floater {
   position: absolute;
-  transform: translateZ(55px);
+  transform: translateZ(50px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  animation: levitateCloud 4.5s ease-in-out infinite;
+  justify-content: center;
+  animation: levitateEarbud 5s ease-in-out infinite;
+  cursor: grab;
+}
+.earbud-floater:active {
+  cursor: grabbing;
+}
+@keyframes levitateEarbud {
+  0%, 100% { transform: translateZ(50px) translateY(0); }
+  50% { transform: translateZ(62px) translateY(-10px); }
+}
+#earbud3dCanvas {
+  width: 290px;
+  height: 290px;
+  display: block;
+  filter: drop-shadow(0 20px 35px rgba(0, 140, 255, 0.45));
+}
+.earbud-hint {
+  position: absolute;
+  bottom: 8px;
+  font-size: 9.5px;
+  letter-spacing: .14em;
+  font-weight: 800;
+  color: #00f0ff;
+  background: rgba(4, 18, 52, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 4px 10px;
+  border-radius: 99px;
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   pointer-events: none;
+  opacity: 0.85;
+  transition: opacity 0.3s ease;
 }
-@keyframes levitateCloud {
-  0%, 100% { transform: translateZ(55px) translateY(0); }
-  50% { transform: translateZ(65px) translateY(-14px); }
-}
-
-.cloud-body {
-  width: 140px;
-  height: 90px;
-  position: relative;
-  filter: drop-shadow(0 18px 30px rgba(0, 140, 255, 0.55));
-}
-.cloud-bubble {
-  position: absolute;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(190, 235, 255, 0.85) 60%, rgba(100, 180, 255, 0.75) 100%);
-  border-radius: 50%;
-  box-shadow: inset -4px -6px 14px rgba(0, 80, 200, 0.35), inset 2px 3px 6px rgba(255, 255, 255, 0.9);
-}
-.cloud-b1 { width: 72px; height: 72px; bottom: 0; left: 8px; }
-.cloud-b2 { width: 84px; height: 84px; top: 0; left: 32px; }
-.cloud-b3 { width: 62px; height: 62px; bottom: 0; right: 8px; }
-.cloud-base {
-  position: absolute;
-  bottom: 0;
-  left: 18px;
-  right: 18px;
-  height: 44px;
-  border-radius: 22px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(160, 220, 255, 0.75));
+.medallion-stage:hover .earbud-hint {
+  opacity: 1;
 }
 
 /* Orbital Sound Bubbles & Acoustic Spheres */

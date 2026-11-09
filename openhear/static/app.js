@@ -65,10 +65,14 @@
         rings.forEach(r => r.style.borderColor = `rgba(0, 240, 255, ${Math.min(0.9, peak * 2)})`);
       }
     }
+    if (typeof window.setEarbudVoiceEnergy === 'function') {
+      window.setEarbudVoiceEnergy(state.active ? rms : 0.0, state.active ? peak : 0.0);
+    }
   }
   async function stopMicrophone() {
     if(!state.active)return null;
     state.active=false;
+    if (typeof window.setEarbudVoiceEnergy === 'function') window.setEarbudVoiceEnergy(0.0, 0.0);
     if(state.raf)cancelAnimationFrame(state.raf);
     if(state.mic){state.mic.getTracks().forEach(x=>x.stop());state.mic=null;}
     if(state.src)state.src.disconnect();

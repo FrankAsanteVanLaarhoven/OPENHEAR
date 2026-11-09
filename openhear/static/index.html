@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>OpenHear Bridge — Continuous Turn Translation Research</title>
   <link rel="stylesheet" href="/static/style.css" />
+  <script src="/static/earbud-3d.js" defer></script>
   <script src="/static/app.js" defer></script>
   <script src="/static/live.js" defer></script>
 </head>
@@ -32,26 +33,22 @@
         </aside>
       </div>
 
-      <!-- 3D Hero Medallion Stage -->
-      <div class="medallion-stage" id="heroMedallion" aria-hidden="true">
+      <!-- 3D Hero Medallion Stage with 360° Interactive Hearing Earbud -->
+      <div class="medallion-stage" id="heroMedallion" aria-label="3D Hearing Earbud Showcase">
         <div class="medallion-dish">
           <div class="sound-rings">
             <div class="sound-ring"></div>
             <div class="sound-ring"></div>
             <div class="sound-ring"></div>
           </div>
-          <div class="cloud-floater">
-            <div class="cloud-body">
-              <div class="cloud-bubble cloud-b1"></div>
-              <div class="cloud-bubble cloud-b2"></div>
-              <div class="cloud-bubble cloud-b3"></div>
-              <div class="cloud-base"></div>
-              <!-- Floating Orbital Sound Particles -->
-              <div class="sound-orb orb-1"></div>
-              <div class="sound-orb orb-2"></div>
-              <div class="sound-orb orb-3"></div>
-            </div>
+          <div class="earbud-floater" title="Interactive 3D Hearing Earbud — Drag to rotate 360°">
+            <canvas id="earbud3dCanvas" width="340" height="340"></canvas>
+            <div class="earbud-hint">360° INTERACTIVE EARBUD</div>
           </div>
+          <!-- Floating Orbital Sound Particles -->
+          <div class="sound-orb orb-1"></div>
+          <div class="sound-orb orb-2"></div>
+          <div class="sound-orb orb-3"></div>
         </div>
       </div>
     </div>
@@ -188,11 +185,11 @@
       </button>
     </section>
 
-    <!-- SOTA Diagnostics & Hardware Calibration -->
+    <!-- Diagnostics & Hardware Calibration Section -->
     <section class="surface sota-section" aria-labelledby="sotaTitle">
       <div class="audio-heading">
         <div>
-          <div class="section-title" id="sotaTitle"><span>SOTA</span> Hardware Calibration &amp; Real-Time Diagnostics</div>
+          <div class="section-title" id="sotaTitle"><span>05</span> Hardware Calibration &amp; Real-Time Diagnostics</div>
           <p id="sotaState" class="subdued">Calibrated physical mouth-to-ear delay, anti-hallucination guardrails and zero-switch LID.</p>
         </div>
         <div class="sota-actions">

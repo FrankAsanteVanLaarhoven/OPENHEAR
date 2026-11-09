@@ -97,6 +97,7 @@ def create_app(runtime_factory):
         allowed = {"style.css": "text/css; charset=utf-8",
                    "app.js": "text/javascript; charset=utf-8",
                    "live.js": "text/javascript; charset=utf-8",
+                   "earbud-3d.js": "text/javascript; charset=utf-8",
                    "capture-worklet.js": "text/javascript; charset=utf-8"}
         if name not in allowed:
             raise HTTPException(404, "Unknown asset")

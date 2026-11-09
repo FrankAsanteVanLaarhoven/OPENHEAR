@@ -161,6 +161,45 @@ Offline trial inference shares the model adapters but additionally activates the
 
 Targets must be re-evaluated based on feasibility and preregistered before confirmatory study. VAD thresholds are demonstration defaults, not calibrated clinical thresholds. See [M2 validation protocol](docs/M2_STREAMING_VALIDATION.md) and [research gates](docs/RESEARCH_GATES.md).
 
+---
+
+# OpenHear SOTA — Physical Latency Calibration & Conversational Intelligence
+
+### 1. Calibrated Physical "Mouth-to-Ear" Hardware Loopback Measurement
+Software timestamps (`perf_counter`) ignore CoreAudio buffers and Bluetooth DAC/ADC delays. OpenHear provides matched-filter chirp cross-correlation for true physical mouth-to-ear delay ($\Delta t_{\text{physical}}$):
+```bash
+# Generate 16 kHz acoustic calibration chirp
+python -m openhear.cli calibrate chirp --output evidence/chirp.wav
+
+# Measure true loopback latency from recorded audio
+python -m openhear.cli calibrate measure --recorded-audio loopback.wav
+```
+
+### 2. Anti-Hallucination & Phantom Speech Mitigation
+Prevents Whisper / Marian decoder hallucinations during silence, noise, or ambient rumble:
+```bash
+python -m openhear.cli guardrails check --text "Thank you for watching."
+```
+
+### 3. Conversational Intelligence & Sub-30ms Interruption Ducking
+- Backchannel detection (`mhm`, `yeah`, `对`, `好的`) to prevent redundant synthetic speech emission.
+- Logarithmic audio ducking (<30ms) when the user interjects while translated speech is playing.
+- Spoken disfluency and speech repair filtering.
+
+### 4. SOTA Metrics & Automated Benchmarking Suite
+Computes Average Lagging (AL), Length-Adaptive Average Lagging (LAAL), Real-Time Factor (RTF), and Sentence-BLEU:
+```bash
+# Populate 40-slot test audio and run benchmark
+python -m openhear.cli benchmark populate --fixtures-dir benchmark/fixtures
+python -m openhear.cli benchmark run --device cpu --output evidence/benchmark-run.json
+python -m openhear.cli benchmark report --results evidence/benchmark-run.json --output evidence/leaderboard.md
+```
+
+### 5. 3D VisionOS / CleanMyMac Glass UI with Fixel Typography
+- Translucent frosted glass dish with refraction rim, levitating 3D acoustic cloud, and orbital sound particles.
+- Tactile 3D buttons animated with live audio equalizer waves on hover, scroll, and real mic RMS volume.
+- Bundled offline **Fixel Display & Text** webfonts (MacPaw open-source brand typeface).
+
 ## Project contents
 
 ```text
@@ -168,17 +207,24 @@ openhear/
   core.py                 Versioned result/evidence orchestration
   adapters.py             Local Whisper, Marian, macOS voice synthesis
   models.py               Locally pinned and hashed model manifest
-  web.py                  Loopback FastAPI + whole-window ASR preview API
+  model_locator.py        Multi-root verified cache discovery
+  preflight.py            Offline preflight & hardware readiness
+  calibration.py          Acoustic loopback physical latency calibration
+  guardrails.py           Anti-hallucination & phantom speech filtering
+  dialogue.py             Backchannel suppression & sub-30ms ducking
+  lid.py                  Streaming language identification (zero-switch)
+  metrics.py              S2ST latency metrics (AL, LAAL, RTF, BLEU)
+  benchmark.py            End-to-end SOTA benchmarking & leaderboard generator
+  web.py                  FastAPI app with calibrated S2ST routes
   stream.py               Adaptive pause thresholds and display prefix helper
   offline.py              Python egress guard + bilateral evidence records
-  benchmark.py            Existing 40-slot bilingual study harness
-  cli.py                  prepare / verify / speak / serve / offline / benchmark
-  static/app.js           M1.1 push-to-talk interface, mode interlock
+  cli.py                  prepare / verify / speak / serve / offline / benchmark / calibrate / guardrails / metrics
+  static/app.js           Push-to-talk interface, voice reactivity, 3D parallax
   static/live.js          Continuous microphone, VAD, queue and history
-  static/capture-worklet.js  PCM capture AudioWorklet
+  static/fonts/           Bundled offline Fixel Display & Text webfonts
   static/index.html, style.css
 
-tests/                    M0/M1/M1.1 regressions + M2 assurance/API tests
+tests/                    133 unit tests across all M0–M3 capabilities
 docs/                     Research, governance and reproducibility protocols
 ```
 

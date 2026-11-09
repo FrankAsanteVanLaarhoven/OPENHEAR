@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OpenHear Bridge — Continuous Turn Translation Research</title>
+  <title>OpenHear Bridge — Speech-to-Speech Translation</title>
   <link rel="stylesheet" href="/static/style.css" />
   <script src="/static/earbud-3d.js" defer></script>
   <script src="/static/app.js" defer></script>
@@ -16,20 +16,18 @@
         <span class="logo" aria-hidden="true">◈</span>
         <span>OPENHEAR <em>BRIDGE</em></span>
       </div>
-      <div class="product-state">LOCAL RESEARCH · M1.2 / M2α · OFFLINE FIRST</div>
     </header>
 
-    <!-- Hero with 3D VisionOS Glass Dish & Levitating Cloud -->
+    <!-- Hero with 3D Glass Dish & 360° Hearing Earbud -->
     <div class="hero">
       <div class="hero-content">
         <div class="eyebrow">
-          <span class="dot"></span> SPEECH-TO-SPEECH RESEARCH CONSOLE
+          <span class="dot"></span> SPEECH-TO-SPEECH TRANSLATION
         </div>
         <h1>Understand across<br /><span class="gradient-word">languages.</span></h1>
         <p>Speak naturally. See the original text and local translation. Listen to an English or Mandarin synthetic voice through your selected audio output.</p>
-        <aside class="capability" aria-label="Research scope">
+        <aside class="capability" aria-label="Audio capabilities">
           <span>Local models · English ⇄ Mandarin</span>
-          <small>Push-to-talk + VAD-segmented live turns. Calibrated offline S2ST.</small>
         </aside>
       </div>
 
@@ -105,8 +103,8 @@
 
     <!-- Continuous Live Conversation Section -->
     <section class="surface live-section" aria-labelledby="liveTitle">
-      <div class="section-title" id="liveTitle"><span>LIVE</span> Continuous conversation research mode <span id="liveBadge" class="tiny-badge">STOPPED</span></div>
-      <p class="subdued">Listen continuously. Voice activity detection selects turn boundaries; tentative text is generated from periodic complete-window ASR passes. Final translation and speech playback occur after a pause. Output is <strong>not</strong> token-level simultaneous interpretation.</p>
+      <div class="section-title" id="liveTitle"><span>LIVE</span> Continuous conversation mode <span id="liveBadge" class="tiny-badge">STOPPED</span></div>
+      <p class="subdued">Listen continuously. Voice activity detection selects turn boundaries; live transcription and synthetic speech playback generate automatically after each turn.</p>
       <div class="controls live-controls">
         <button id="liveStart" class="primary" disabled>
           <span class="btn-wave" aria-hidden="true">
@@ -190,7 +188,6 @@
       <div class="audio-heading">
         <div>
           <div class="section-title" id="sotaTitle"><span>05</span> Hardware Calibration &amp; Real-Time Diagnostics</div>
-          <p id="sotaState" class="subdued">Calibrated physical mouth-to-ear delay, anti-hallucination guardrails and zero-switch LID.</p>
         </div>
         <div class="sota-actions">
           <label class="live-choice" for="autoLidToggle"><input id="autoLidToggle" type="checkbox" checked /> Auto-LID (Zero-Switch)</label>
@@ -208,10 +205,6 @@
       </div>
       <div id="calibrationResult" class="metrics subdued calibration-metrics">Click 'Measure Hardware Latency' to test physical CoreAudio loopback time-of-flight.</div>
     </section>
-
-    <footer>
-      Research prototype. Continuous mode is utterance-segmented, and ASR previews are unstable whole-window reruns. No hearing-aid, legal, medical or safety-critical interpretation claims. Browser and model timings are <strong>not</strong> acoustic mouth-to-ear delay. Model weights must be prepared online once; offline execution and network isolation require separate verification. Audio is not stored by the local server after processing. Downloaded evidence may contain private speech transcripts.
-    </footer>
   </main>
 </body>
 </html>
